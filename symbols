@@ -1,5 +1,53 @@
 --- Symbol List (sorted by symbol)
-1.1                      0823              (R )
+1.1                      0826              (R )
+10.l                     72b7              (R )
+11.l                     72c4              (R )
+12.l                     72e3              (R )
+13.l                     72f0              (R )
+14.l                     730c              (R )
+15.l                     7319              (R )
+17.clear                 7248              (R )
+17.low                   7250              (R )
+18.q                     7266              (R )
+24.clear                 72ab              (R )
+24.low                   72b3              (R )
+28.end                   72d5              (R )
+28.true                  72d3              (R )
+3.q                      7229              (R )
+33.l                     72e4              (R )
+4.q                      723e                  
+40.l                     7307              (R )
+48.q                     733f              (R )
+49.q                     7354                  
+5.q                      7253                  
+50.q                     7369                  
+51.q                     737e                  
+52.1                     73c1              (R )
+52.2                     73ed              (R )
+52.3                     7419              (R )
+52.4                     743a              (R )
+52.q                     7444              (R )
+53.l                     73a1              (R )
+54.l                     73ae              (R )
+55.l                     73cd              (R )
+56.l                     73da              (R )
+57.l                     73f9              (R )
+58.l                     7406              (R )
+59.l                     7422              (R )
+6.q                      7268                  
+60.l                     742f              (R )
+7.1                      72ab              (R )
+7.2                      72d7              (R )
+7.3                      7303              (R )
+7.4                      7324              (R )
+7.q                      732e              (R )
+8.l                      728b              (R )
+9.l                      7298              (R )
+_CO_2                    7284                  
+_DO_2                    7284              (R )
+_ED_2                    728e              (R )
+_EI_1                    731d              (R )
+_EL_1                    72fd              (R )
 AIM65                    0000              (R )
 APPLE_BAD_BYTE           0000                  
 ARG                      002e              (R )
@@ -12,6 +60,11 @@ c16                      0402              (R )
 c264                     0400              (R )
 c64                      0100              (R )
 CHARAC                   0015              (R )
+CIA1_CRA                 dc0e                  
+CIA1_CRB                 dc0f                  
+CIA1_IRQCTR              dc0d              (R )
+CIA1_TBHI                dc07                  
+CIA1_TBLO                dc06                  
 CIA_DIRECTIONALR         dd00                  
 COLOR_RAM                d800                  
 CONFIG_10A               0000              (R )
@@ -23,7 +76,7 @@ CONFIG_CBM_ALL           0001
 CONFIG_ROR_WORKAROUND    0000              (R )
 CONFIG_SMALL             0001              (R )
 cplus4                   0401              (R )
-data_start               0832                  
+data_start               7447                  
 DEST                     0018                  
 ERR_DEVICE_NOT_PRESENT   0005                  
 ERR_DEVICE_NOT_READY     000a                  
@@ -40,14 +93,15 @@ ERR_NOT_OUTPUT_FILE      0007
 ERR_OVERFLOW             000f                  
 ERR_READ_ERROR           000b                  
 ERR_TOO_MANY_FILES       0001                  
-ERRNO                    0831                  
+ERRNO                    731e                  
 EXPON                    0024                  
 EXPSGN                   0026                  
+F_src2.setscreenlocation 72c8              (R )
 FAC                      0027              (R )
 FAC_LAST                 002a                  
 FACEXTENSION             0034                  
 FACSIGN                  002b                  
-FASTIRQ                  0000                  
+FASTIRQ                  0000              (R )
 FPULL                    0000                  
 FPUSH                    0000                  
 HIGHDS                   001f                  
@@ -57,6 +111,7 @@ I_BINREAD_IMPORTED       0000 ????         (R )
 I_BINWRITE_IMPORTED      0000 ????         (R )
 I_CALC_SCRROWPTR_IMPORTED 0000 ????         (R )
 I_EXP_IMPORTED           0000 ????         (R )
+I_F_src2.setscreenlocation_IMPORTED 0001              (R )
 I_FIN_IMPORTED           0000 ????         (R )
 I_FMOD_IMPORTED          0000 ????         (R )
 I_FOUT_IMPORTED          0000 ????         (R )
@@ -112,6 +167,19 @@ IO_DDRA                  dc02
 IO_DDRB                  dc03                  
 IO_KEYR                  dc01                  
 IO_KEYW                  dc00                  
+IRQ_BACKGROUND           0002              (R )
+IRQ_BACKGROUND_V         73d5                  
+IRQ_RASTER               0001              (R )
+IRQ_RASTER_V             73a9              (R )
+IRQ_SPRITE               0004              (R )
+IRQ_SPRITE_V             7401                  
+IRQ_SYSTEM               0010              (R )
+IRQ_TIMER                0008              (R )
+IRQ_TIMER_V              742a                  
+IRQFLAGS                 731f              (R )
+IRQRESET                 732d              (R )
+IRQSETUP                 7320              (R )
+IRQVECTOR                0314              (R )
 JIFFY                    00a0                  
 KBD                      0000                  
 KERNAL_CHKIN             ffc6                  
@@ -130,7 +198,10 @@ KERNAL_SAVE              ffd8
 KERNAL_SCREEN_ADDR       0288                  
 KERNAL_SETLFS            ffba                  
 KERNAL_SETNAM            ffbd                  
-library_start            0831              (R )
+L_src2.begin_vblank      72b8              (R )
+L_src2.line_65           728e              (R )
+L_src2.start             7200              (R )
+library_start            731e              (R )
 LOWTR                    0025                  
 LOWTRX                   0025              (R )
 MANTISSA_BYTES           0003                  
@@ -147,7 +218,7 @@ pet4016                  1022
 pet4032                  1024                  
 pet8032                  1044                  
 prg_start                080d              (R )
-R0                       0002                  
+R0                       0002              (R )
 R1                       0003                  
 R2                       0004                  
 R3                       0005                  
@@ -167,14 +238,14 @@ RE                       0011
 RESULT                   0018              (R )
 RESULT_LAST              001b                  
 RF                       0012                  
-routines_start           0831                  
+routines_start           72c8                  
 SAREG                    030c                  
 SCINIT                   ff81                  
 SERLEN                   002c                  
 SGNCPR                   0033                  
 SHIFTSIGNEXT             002d                  
 SN                       0014                  
-SP                       000e                  
+SP                       000e              (R )
 SPREG                    030f                  
 SRVEC                    00d9                  
 stack                    0100                  
@@ -198,23 +269,39 @@ TEMP2                    0023
 TEMP3                    0039              (R )
 TH                       0013                  
 TMPEXP                   0023                  
-USEIRQ                   0000              (R )
+USEIRQ                   0001              (R )
 USESFX                   0000              (R )
 USESPR                   0000              (R )
+V_src2.col               744e                  
+V_src2.current_screen    744b              (R )
+V_src2.i                 744c                  
+V_src2.map_column        7449                  
+V_src2.numlines          744f                  
+V_src2.offset            7447                  
+V_src2.row               744d                  
+V_src2.scroll            7453              (R )
+V_src2.startline         7452                  
+V_src2.this_char         7451                  
+V_src2.this_colour       7450                  
 VARPNT                   0037                  
-vars_end                 0832                  
-vars_start               0832              (R )
+vars_end                 7454                  
+vars_start               7447              (R )
 vic20                    0200              (R )
 vic20_3k                 0201              (R )
 vic20_8k                 0202              (R )
 VICI_BORDER_BG           900f                  
 VICII_BACKGROUND         d021                  
 VICII_BORDER             d020                  
+VICII_IRQCTR             d01a              (R )
+VICII_IRQSTATUS          d019              (R )
 VICII_MEMCONTROL         d018                  
+VICII_RASTER             d012                  
+VICII_SCREENCTR          d011                  
 VMODE_BITMAP             0002                  
 VMODE_EXT                0003                  
 VMODE_HIRES              0000                  
 VMODE_MULTI              0001                  
 VMODE_TEXT               0001                  
 VSCR                     d011                  
+XCBIRQ                   7394              (R )
 --- End of Symbol List.
