@@ -50,9 +50,21 @@ sub SetScreenLocation() static
 
 end sub
 
+sub swap_screens() static
+    border 2
+    return
+end sub    
+
+sub copy_and_shift() static
+    border 3 
+end sub    
+
 start:
 
     vmode text multi
+    charset ram 4           ' $2000
+    memset screen_base, 1000, 32
+    memset screen_backbuffer_base, 1000, 32
     border 0    
     background 0
     
@@ -60,8 +72,6 @@ start:
     
     current_screen = 0
     call SetScreenLocation()
-    
-    
     
     on raster start_colorcopy_line gosub line_65
     system interrupt off
@@ -73,9 +83,35 @@ line_65:
 
     on raster begin_vblank_line gosub begin_vblank
     
-    return
-    
 begin_vblank:
 
     scroll = scroll - 1
-    return
+    border scroll
+    
+    if scroll = 255 then 
+        call swap_screens()
+    else
+
+        hscroll scroll
+        
+        ' Copy top half of char screen to back buffer.
+        if scroll = 4 then
+            startline = 4
+            numlines = 8
+            call copy_and_shift()
+        end if
+        
+        ' Copy bottom half of char screen to back buffer.
+        if scroll = 2 then
+            startline = 12
+            numlines = 8
+            call copy_and_shift()
+        end if
+        
+        ' TODO expand border
+    
+    end if
+    
+    on raster start_colorcopy_line gosub line_65
+    
+    
