@@ -51,12 +51,11 @@ sub SetScreenLocation() static
 end sub
 
 sub swap_screens() static
-    border 2
-    return
+    border 0
 end sub    
 
 sub copy_and_shift() static
-    border 3 
+    border 0
 end sub    
 
 start:
@@ -86,14 +85,14 @@ line_65:
 begin_vblank:
 
     scroll = scroll - 1
-    border scroll
     
     if scroll = 255 then 
+        border 1
         call swap_screens()
     else
 
         hscroll scroll
-        
+        border scroll
         ' Copy top half of char screen to back buffer.
         if scroll = 4 then
             startline = 4
