@@ -1,5 +1,5 @@
 ' https://github.com/AlanPBourke/trse-scroller/blob/main/x_scroll.ras
-include "xcb-ext-io.bas"
+include "xcb-ext-io-v3.bas"
 
 const start_colorcopy_line      = 65
 const begin_vblank_line         = 245

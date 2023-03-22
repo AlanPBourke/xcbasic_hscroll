@@ -87,9 +87,9 @@ sub io_Open(logicalFile as byte, device as byte, channel as byte) shared static
     asm 
     lda #0
     jsr _KERNAL_SETNAM
-    lda {self}.logicalFile
-    ldx {self}.device
-    ldy {self}.channel
+    lda (logicalFile)
+    ldx (device)
+    ldy (channel)
     jsr _KERNAL_SETLFS
     jsr _KERNAL_OPEN
     bcs .error
@@ -123,13 +123,13 @@ sub io_OpenName(logicalFile as byte, device as byte, channel as byte, _
     dim length as byte
     length = len(filename)
     asm 
-    lda {self}.length
-    ldx {self}.filename
-    ldy {self}.filename+1
+    lda (length)
+    ldx (filename)
+    ldy (filename)+1
     jsr _KERNAL_SETNAM
-    lda {self}.logicalFile
-    ldx {self}.device
-    ldy {self}.channel
+    lda (logicalFile)
+    ldx (device)
+    ldy (channel)
     jsr _KERNAL_SETLFS
     jsr _KERNAL_OPEN
     bcs .error
@@ -164,7 +164,7 @@ rem ******************************
 
 sub io_Close(logicalFile as byte) shared static
     asm 
-    lda {self}.logicalFile
+    lda (logicalFile)
     jsr _KERNAL_CLOSE
     end asm
 end sub
@@ -189,7 +189,7 @@ function io_ReadByte as byte (logicalFile as byte) shared static
     dim result as byte : result = 0
     asm 
     jsr _KERNAL_CLRCHN
-    ldx {self}.logicalFile
+    ldx (logicalFile)
     jsr _KERNAL_CHKIN
     bcs .error
     jsr _KERNAL_CHRIN
@@ -201,7 +201,7 @@ function io_ReadByte as byte (logicalFile as byte) shared static
     jsr _KERNAL_READST
     cmp #$00
     bne .error
-    stx {self}.result
+    stx (result)
     jsr _KERNAL_CLRCHN
     jmp .end
 .error
@@ -235,21 +235,21 @@ sub io_ReadBytes(logicalFile as byte, bufferAddress as int, _
     byteCount as byte) shared static
     
     asm 
-    ldx {self}.logicalFile
+    ldx (logicalFile)
     jsr _KERNAL_CHKIN
     ;readst
     ldy #$00
-    lda {self}.bufferAddress
+    lda (bufferAddress)
     sta .buff+1
-    lda {self}.bufferAddress+1
+    lda (bufferAddress)+1
     sta .buff+2
 .start
     jsr _KERNAL_CHRIN
 .buff
-    sta {self}.bufferAddress,Y
+    sta (bufferAddress),Y
     ;readst
     iny
-    cpy {self}.byteCount
+    cpy (byteCount)
     bne .start
     jsr _KERNAL_CLRCHN
     end asm
@@ -272,15 +272,16 @@ rem ******************************
 
 sub  io_WriteByte(logicalFile as byte, _byte as byte) shared static
     asm 
-    ldx {self}.logicalFile
+    ldx (logicalFile)
     jsr _KERNAL_CHKOUT
     ;readst
-    lda {self}._byte
+    lda (_byte)
     jsr _KERNAL_CHROUT
     ;readst
     jsr _KERNAL_CLRCHN
-    end sub
-endproc
+    end asm
+end sub
+
 
 rem ******************************
 rem * Command:
@@ -305,21 +306,21 @@ sub io_WriteBytes(logicalFile as byte, bufferAddress as int, _
     byteCount as byte) shared static
     
     asm 
-    ldx {self}.logicalFile
+    ldx (logicalFile)
     jsr _KERNAL_CHKOUT
     ;readst
     ldy #$00
-    lda {self}.bufferAddress
+    lda (bufferAddress)
     sta .buff+1
-    lda {self}.bufferAddress+1
+    lda (bufferAddress)+1
     sta .buff+2
 .start
 .buff
-    lda {self}.bufferAddress,Y
+    lda (bufferAddress),Y
     jsr _KERNAL_CHROUT
     ;readst
     iny
-    cpy {self}.byteCount
+    cpy (byteCount)
     bne .start
     jsr _KERNAL_CLRCHN
     end asm
@@ -342,17 +343,17 @@ rem ******************************
 
 sub io_WriteString(logicalFile as byte, text as string * 40) shared static
     asm 
-    ldx {self}.logicalFile
+    ldx (logicalFile)
     jsr _KERNAL_CHKOUT
     ;readst
     ldy #$00
-    lda {self}.text
+    lda (text)
     sta .buff+1
-    lda {self}.text+1
+    lda (text)+1
     sta .buff+2
 .start
 .buff
-    lda {self}.text,Y
+    lda (text),Y
     beq .end
     jsr _KERNAL_CHROUT
     ;readst
