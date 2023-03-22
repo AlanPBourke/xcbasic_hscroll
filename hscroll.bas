@@ -33,6 +33,15 @@ incbin "UridiumChars.bin"
 origin map_base
 incbin "UridiumMap.bin"
 
+sub debugprint(s as string * 40) static
+
+  call io_Open(4, 4, 0)
+  call io_WriteString(4, "1. this is output from xc=basic!!{CR}")
+  call io_WriteString(4, "2. this is output from xc=basic!!{CR}")
+  call io_Close(4)
+  
+end sub
+
 sub SetScreenLocation() static
 
     ' SEE https://oldskoolcoder.co.uk/the-vic-ii-addressing-system/
@@ -103,6 +112,7 @@ end sub
 
 start:
 
+    call debugprint("arse")
     vmode text multi
     charset ram 4           ' $2000
     memset screen_base, 1000, 32

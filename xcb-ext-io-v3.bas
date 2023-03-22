@@ -11,17 +11,17 @@ rem * version: 1.0 Aug 4, 2020
 rem * - Initial release
 rem ******************************
 
-const KERNAL_SETLFS = $FFBA 
-const KERNAL_SETNAM = $FFBD
-const KERNAL_OPEN   = $FFC0
-const KERNAL_CLOSE  = $FFC3
-const KERNAL_CHKIN  = $FFC6
-const KERNAL_CHKOUT = $FFC9
-const KERNAL_CLRCHN = $FFCC
-const KERNAL_CHRIN  = $FFCF
-const KERNAL_CHROUT = $FFD2
-const KERNAL_LOAD   = $FFD5
-const KERNAL_READST = $FE07
+const _KERNAL_SETLFS = $FFBA 
+const _KERNAL_SETNAM = $FFBD
+const _KERNAL_OPEN   = $FFC0
+const _KERNAL_CLOSE  = $FFC3
+const _KERNAL_CHKIN  = $FFC6
+const _KERNAL_CHKOUT = $FFC9
+const _KERNAL_CLRCHN = $FFCC
+const _KERNAL_CHRIN  = $FFCF
+const _KERNAL_CHROUT = $FFD2
+const _KERNAL_LOAD   = $FFD5
+const _KERNAL_READST = $FE07
 
 sub io_PrintError() shared static
     asm
@@ -87,9 +87,9 @@ sub io_Open(logicalFile as byte, device as byte, channel as byte) shared static
     asm 
     lda #0
     jsr _KERNAL_SETNAM
-    lda (logicalFile)
-    ldx (device)
-    ldy (channel)
+    lda {logicalFile}
+    ldx {device}
+    ldy {channel}
     jsr _KERNAL_SETLFS
     jsr _KERNAL_OPEN
     bcs .error
@@ -123,13 +123,13 @@ sub io_OpenName(logicalFile as byte, device as byte, channel as byte, _
     dim length as byte
     length = len(filename)
     asm 
-    lda (length)
-    ldx (filename)
-    ldy (filename)+1
+    lda {length}
+    ldx {filename}
+    ldy {filename}+1
     jsr _KERNAL_SETNAM
-    lda (logicalFile)
-    ldx (device)
-    ldy (channel)
+    lda {logicalFile}
+    ldx {device}
+    ldy {channel}
     jsr _KERNAL_SETLFS
     jsr _KERNAL_OPEN
     bcs .error
@@ -164,7 +164,7 @@ rem ******************************
 
 sub io_Close(logicalFile as byte) shared static
     asm 
-    lda (logicalFile)
+    lda {logicalFile}
     jsr _KERNAL_CLOSE
     end asm
 end sub
@@ -189,7 +189,7 @@ function io_ReadByte as byte (logicalFile as byte) shared static
     dim result as byte : result = 0
     asm 
     jsr _KERNAL_CLRCHN
-    ldx (logicalFile)
+    ldx {logicalFile}
     jsr _KERNAL_CHKIN
     bcs .error
     jsr _KERNAL_CHRIN
@@ -201,7 +201,7 @@ function io_ReadByte as byte (logicalFile as byte) shared static
     jsr _KERNAL_READST
     cmp #$00
     bne .error
-    stx (result)
+    stx {result}
     jsr _KERNAL_CLRCHN
     jmp .end
 .error
@@ -235,21 +235,21 @@ sub io_ReadBytes(logicalFile as byte, bufferAddress as int, _
     byteCount as byte) shared static
     
     asm 
-    ldx (logicalFile)
+    ldx {logicalFile}
     jsr _KERNAL_CHKIN
     ;readst
     ldy #$00
-    lda (bufferAddress)
+    lda {bufferAddress}
     sta .buff+1
-    lda (bufferAddress)+1
+    lda {bufferAddress}+1
     sta .buff+2
 .start
     jsr _KERNAL_CHRIN
 .buff
-    sta (bufferAddress),Y
+    sta {bufferAddress},Y
     ;readst
     iny
-    cpy (byteCount)
+    cpy {byteCount}
     bne .start
     jsr _KERNAL_CLRCHN
     end asm
@@ -272,10 +272,10 @@ rem ******************************
 
 sub  io_WriteByte(logicalFile as byte, _byte as byte) shared static
     asm 
-    ldx (logicalFile)
+    ldx {logicalFile}
     jsr _KERNAL_CHKOUT
     ;readst
-    lda (_byte)
+    lda {_byte}
     jsr _KERNAL_CHROUT
     ;readst
     jsr _KERNAL_CLRCHN
@@ -306,21 +306,21 @@ sub io_WriteBytes(logicalFile as byte, bufferAddress as int, _
     byteCount as byte) shared static
     
     asm 
-    ldx (logicalFile)
+    ldx {logicalFile}
     jsr _KERNAL_CHKOUT
     ;readst
     ldy #$00
-    lda (bufferAddress)
+    lda {bufferAddress}
     sta .buff+1
-    lda (bufferAddress)+1
+    lda {bufferAddress}+1
     sta .buff+2
 .start
 .buff
-    lda (bufferAddress),Y
+    lda {bufferAddress},Y
     jsr _KERNAL_CHROUT
     ;readst
     iny
-    cpy (byteCount)
+    cpy {byteCount}
     bne .start
     jsr _KERNAL_CLRCHN
     end asm
@@ -343,17 +343,17 @@ rem ******************************
 
 sub io_WriteString(logicalFile as byte, text as string * 40) shared static
     asm 
-    ldx (logicalFile)
+    ldx {logicalFile}
     jsr _KERNAL_CHKOUT
     ;readst
     ldy #$00
-    lda (text)
+    lda {text}
     sta .buff+1
-    lda (text)+1
+    lda {text}+1
     sta .buff+2
 .start
 .buff
-    lda (text),Y
+    lda {text},Y
     beq .end
     jsr _KERNAL_CHROUT
     ;readst
