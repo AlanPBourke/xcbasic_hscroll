@@ -1,4 +1,6 @@
 ' https://github.com/AlanPBourke/trse-scroller/blob/main/x_scroll.ras
+include "xcb-ext-io.bas"
+
 const start_colorcopy_line      = 65
 const begin_vblank_line         = 245
 
@@ -58,31 +60,16 @@ sub copy_and_shift() static
     border 0
 end sub    
 
-start:
+SUB WaitRasterLine256() SHARED STATIC
+    ASM
+wait1:  bit $d011
+        bmi wait1
+wait2:  bit $d011
+        bpl wait2
+    END ASM
+END SUB
 
-    vmode text multi
-    charset ram 4           ' $2000
-    memset screen_base, 1000, 32
-    memset screen_backbuffer_base, 1000, 32
-    border 0    
-    background 0
-    
-    scroll = 7
-    
-    current_screen = 0
-    call SetScreenLocation()
-    
-    on raster start_colorcopy_line gosub line_65
-    system interrupt off
-    raster interrupt on
-    
-    do : loop while 1
-
-line_65:
-
-    on raster begin_vblank_line gosub begin_vblank
-    
-begin_vblank:
+sub begin_vblank() shared static
 
     scroll = scroll - 1
     
@@ -111,6 +98,32 @@ begin_vblank:
     
     end if
     
-    on raster start_colorcopy_line gosub line_65
+end sub
+
+
+start:
+
+    vmode text multi
+    charset ram 4           ' $2000
+    memset screen_base, 1000, 32
+    memset screen_backbuffer_base, 1000, 32
+    border 0    
+    background 0
     
+    scroll = 7
+    
+    current_screen = 0
+    call SetScreenLocation()
+    
+    'on raster start_colorcopy_line gosub line_65
+    ''on raster begin_vblank_line gosub begin_vblank
+    ''system interrupt off
+    ''raster interrupt on
+    
+    do
+        call WaitRasterLine256()
+        call begin_vblank()
+    loop while 1
+    
+
     
