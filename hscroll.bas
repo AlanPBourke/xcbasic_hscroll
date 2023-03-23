@@ -1,5 +1,6 @@
 ' https://github.com/AlanPBourke/trse-scroller/blob/main/x_scroll.ras
-include "xcb-ext-io-v3.bas"
+include "consts.bas"
+include "funcs.bas"
 
 const start_colorcopy_line      = 65
 const begin_vblank_line         = 245
@@ -25,22 +26,15 @@ dim this_colour     as byte
 dim this_char       as byte
 dim startline       as byte
 dim scroll          as byte
-
+dim from_ptr        as int
+dim to_ptr          as int
+ 
 goto start
 
 origin charset_base
 incbin "UridiumChars.bin"
 origin map_base
 incbin "UridiumMap.bin"
-
-sub debugprint(s as string * 40) static
-
-  call io_Open(4, 4, 0)
-  call io_WriteString(4, "1. this is output from xc=basic!!{CR}")
-  call io_WriteString(4, "2. this is output from xc=basic!!{CR}")
-  call io_Close(4)
-  
-end sub
 
 sub SetScreenLocation() static
 
@@ -62,11 +56,35 @@ sub SetScreenLocation() static
 end sub
 
 sub swap_screens() static
-    border 0
+    
+    border GREEN
+    
 end sub    
 
 sub copy_and_shift() static
-    border 0
+
+    if current_screen = 0 then
+        from_ptr = screen_base
+        to_ptr = screen_backbuffer_base
+    else
+        from_ptr = screen_backbuffer_base
+        to_ptr = screen_base 
+    end if
+    
+    to_ptr = startline * 40
+    from_ptr = 1 + to_ptr
+    
+    row = 0
+    
+    do while row < numlines 
+    
+        memcpy from_ptr, to_ptr, 39
+        row = row + 1
+        from_ptr = from_ptr + 40
+        to_ptr = to_ptr + 40
+        
+    loop
+    
 end sub    
 
 SUB WaitRasterLine256() SHARED STATIC
@@ -80,20 +98,25 @@ END SUB
 
 sub begin_vblank() shared static
 
+    border GREEN
+
     scroll = scroll - 1
-    
+
+    asm
+        brk
+    end asm
+
     if scroll = 255 then 
-        border 1
         call swap_screens()
     else
-
         hscroll scroll
-        border scroll
+
         ' Copy top half of char screen to back buffer.
         if scroll = 4 then
             startline = 4
             numlines = 8
             call copy_and_shift()
+            call WaitAnyKey()
         end if
         
         ' Copy bottom half of char screen to back buffer.
@@ -101,6 +124,7 @@ sub begin_vblank() shared static
             startline = 12
             numlines = 8
             call copy_and_shift()
+            call WaitAnyKey()
         end if
         
         ' TODO expand border
@@ -112,13 +136,13 @@ end sub
 
 start:
 
-    call debugprint("arse")
     vmode text multi
     charset ram 4           ' $2000
     memset screen_base, 1000, 32
     memset screen_backbuffer_base, 1000, 32
-    border 0    
-    background 0
+
+    background BLACK
+    border MIDGREY
     
     scroll = 7
     
@@ -134,6 +158,3 @@ start:
         call WaitRasterLine256()
         call begin_vblank()
     loop while 1
-    
-
-    
