@@ -14,21 +14,24 @@ const map_base                  = $5000
 const map_height                = 17
 const map_width                 = 512
 
-                
-dim offset          as int
-dim map_column      as int
-dim current_screen  as byte
-dim i               as byte
-dim row             as byte
-dim col             as byte
-dim numlines        as byte
-dim this_colour     as byte
-dim this_char       as byte
-dim startline       as byte
-dim scroll          as byte
-dim from_ptr        as int
-dim to_ptr          as int
- 
+dim current_screen          as byte
+dim i                       as byte
+dim row                     as byte
+dim col                     as byte
+dim numlines                as byte
+dim this_colour             as byte
+dim this_char               as byte
+dim startline               as byte
+dim scroll                  as byte
+
+dim from_ptr                as word
+dim to_ptr                  as word
+dim screen_base_ptr         as word
+dim backbuffer_base_ptr     as word
+dim map_ptr                 as word
+dim offset                  as word
+dim map_column              as word
+
 goto start
 
 origin charset_base
@@ -46,6 +49,7 @@ sub SetScreenLocation() static
     '
     ' otherwise set to screen_backbuffer_base = $3400
     ' so register shoulf be %1101xxxx
+         call WaitAnyKey()
 
     if current_screen = 0 then
         poke vic_ctrl, (peek(vic_ctrl) and %00001111) or %11000000
@@ -55,14 +59,51 @@ sub SetScreenLocation() static
 
 end sub
 
-sub swap_screens() static
+sub DrawColumn39FromMap() static
+
+    if current_screen = 0 then
+        to_ptr = screen_backbuffer_base
+    else
+        to_ptr = screen_base 
+    end if    
+
+    to_ptr = to_ptr + 160       ' Screen row 4
+    map_ptr = map_base + map_column
     
-    border GREEN
+    for i = 1 to 17
+        poke to_ptr + 39, peek(map_ptr)
+        to_ptr = to_ptr + 40
+        map_ptr = map_ptr + map_width
+    next i
+    
+    map_column = map_column + 1
+    if map_column = 254 then map_column = 0
+    
+end sub
+
+sub swap_screens() static
+
+    border green
+    call WaitAnyKey()
+    
+    call DrawColumn39FromMap()
+    scroll = 7
+    hscroll scroll
+    
+    if current_screen = 0 then
+        current_screen = 1
+    else
+        current_screen = 0
+    end if    
+    
+    call SetScreenLocation()
     
 end sub    
 
 sub copy_and_shift() static
-
+    
+    border RED
+    call WaitAnyKey()
     if current_screen = 0 then
         from_ptr = screen_base
         to_ptr = screen_backbuffer_base
@@ -87,46 +128,36 @@ sub copy_and_shift() static
     
 end sub    
 
-SUB WaitRasterLine256() SHARED STATIC
-    ASM
-wait1:  bit $d011
-        bmi wait1
-wait2:  bit $d011
-        bpl wait2
-    END ASM
-END SUB
 
-sub begin_vblank() shared static
-
-    border GREEN
+sub begin_vblank() static
 
     scroll = scroll - 1
 
-    asm
-        brk
-    end asm
-
     if scroll = 255 then 
+        border BLACK
+        call WaitAnyKey()
         call swap_screens()
     else
+        
         hscroll scroll
 
-        ' Copy top half of char screen to back buffer.
-        if scroll = 4 then
-            startline = 4
-            numlines = 8
-            call copy_and_shift()
-            call WaitAnyKey()
-        end if
+        select case scroll
         
-        ' Copy bottom half of char screen to back buffer.
-        if scroll = 2 then
-            startline = 12
-            numlines = 8
-            call copy_and_shift()
-            call WaitAnyKey()
-        end if
+            ' Copy top half of char screen to back buffer.
+            case 4
+            
+                startline = 4
+                numlines = 8
+                call copy_and_shift()
         
+            ' Copy bottom half of char screen to back buffer.
+            case 2 
+            
+                startline = 12
+                numlines = 8
+                call copy_and_shift()
+       
+        end select
         ' TODO expand border
     
     end if
@@ -146,6 +177,9 @@ start:
     
     scroll = 7
     
+    screen_base_ptr = screen_base
+    backbuffer_base_ptr = screen_backbuffer_base
+    
     current_screen = 0
     call SetScreenLocation()
     
@@ -153,8 +187,9 @@ start:
     ''on raster begin_vblank_line gosub begin_vblank
     ''system interrupt off
     ''raster interrupt on
+
+mainloop:    
+    do : loop while scan() < begin_vblank_line
+    call begin_vblank()
+    goto mainloop
     
-    do
-        call WaitRasterLine256()
-        call begin_vblank()
-    loop while 1
